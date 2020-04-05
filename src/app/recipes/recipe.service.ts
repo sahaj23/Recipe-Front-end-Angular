@@ -5,6 +5,7 @@ import { ShoppingListService } from "../shopping-list/shopping-list.service";
 import { Subject } from "rxjs";
 @Injectable()
 export class RecipeService {
+  recipesChanged = new Subject<Recipe[]>();
   constructor(private slService: ShoppingListService) {}
   private recipes: Recipe[] = [
     new Recipe(
@@ -14,7 +15,7 @@ export class RecipeService {
       [
         new Ingredient("Chicken", 1),
         new Ingredient("Milk", 1),
-        new Ingredient("Butter", 3)
+        new Ingredient("Butter", 3),
       ]
     ),
     new Recipe(
@@ -22,7 +23,7 @@ export class RecipeService {
       "Patty put between bun",
       "https://image.cnbcfm.com/api/v1/image/106152658-1569589928424pltstill-twitterlinkedin.jpg?v=1569589970&w=678&h=381",
       [new Ingredient("Bun", 2), new Ingredient("Meat", 1)]
-    )
+    ),
   ];
   getRecipes() {
     return this.recipes.slice(); //returns only a copy
@@ -32,5 +33,17 @@ export class RecipeService {
   }
   onAddToShoppingList(ingredients: Ingredient[]) {
     this.slService.addIngredients(ingredients);
+  }
+  updateRecipe(index: number, recipe: Recipe) {
+    this.recipes[index] = recipe;
+    this.recipesChanged.next(this.recipes);
+  }
+  addRecipe(recipe: Recipe) {
+    this.recipes.push(recipe);
+    this.recipesChanged.next(this.recipes);
+  }
+  deleteRecipe(index: number) {
+    this.recipes.splice(index, 1);
+    this.recipesChanged.next(this.recipes);
   }
 }
